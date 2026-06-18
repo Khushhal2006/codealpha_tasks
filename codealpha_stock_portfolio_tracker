@@ -1,0 +1,76 @@
+def stock_portfolio_tracker():
+    # 1. Hardcoded dictionary to define stock prices
+    stock_prices = {
+        "AAPL": 180,
+        "TSLA": 250,
+        "MSFT": 400,
+        "AMZN": 175,
+        "GOOG": 150
+    }
+    
+    portfolio = {}
+    
+    print("=== Stock Portfolio Tracker ===")
+    print("Available stocks in our database:")
+    for stock, price in stock_prices.items():
+        print(f" - {stock}: ${price}")
+    print("===============================")
+
+    # 2. User Input Loop
+    while True:
+        stock_name = input("\nEnter stock symbol to add (or type 'done' to finish): ").upper().strip()
+        if stock_name == 'DONE':
+            break
+        
+        if stock_name not in stock_prices:
+            print("❌ Stock symbol not recognized. Please choose from the list above.")
+            continue
+        
+        try:
+            quantity = int(input(f"Enter the quantity of shares for {stock_name}: "))
+            if quantity <= 0:
+                print("❌ Quantity must be greater than zero.")
+                continue
+        except ValueError:
+            print("❌ Invalid input. Please enter a whole number for the quantity.")
+            continue
+        
+        # Accumulate quantities if the stock is entered more than once
+        portfolio[stock_name] = portfolio.get(stock_name, 0) + quantity
+
+    # 3. Calculate and Display Total Investment Value
+    print("\n=== Your Portfolio Summary ===")
+    total_investment = 0
+    summary_lines = []
+    
+    for stock, qty in portfolio.items():
+        price = stock_prices[stock]
+        item_total = qty * price
+        total_investment += item_total
+        
+        line = f"{stock}: {qty} shares @ ${price} each = ${item_total}"
+        print(line)
+        summary_lines.append(line)
+        
+    total_line = f"Total Investment Value: ${total_investment}"
+    print("-" * 30)
+    print(total_line)
+    print("==============================")
+    
+    # 4. Optional: Save the results to a .txt file
+    if portfolio:
+        save_choice = input("\nDo you want to save this summary to a text file? (yes/no): ").lower().strip()
+        if save_choice in ['yes', 'y']:
+            try:
+                with open("portfolio_summary.txt", "w") as file:
+                    file.write("=== MY STOCK PORTFOLIO SUMMARY ===\n")
+                    for line in summary_lines:
+                        file.write(line + "\n")
+                    file.write("-" * 34 + "\n")
+                    file.write(total_line + "\n")
+                print("💾 Success! Summary saved to 'portfolio_summary.txt'.")
+            except IOError:
+                print("❌ An error occurred while trying to save the file.")
+
+if __name__ == "__main__":
+    stock_portfolio_tracker()
