@@ -1,0 +1,53 @@
+import re
+
+def extract_emails_from_file(input_file, output_file):
+    # Standard Regular Expression pattern for matching common email formats
+    email_pattern = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
+    
+    try:
+        # Open and read the source text file
+        with open(input_file, 'r') as file:
+            file_content = file.read()
+        
+        # Find all matching email strings using regex
+        found_emails = re.findall(email_pattern, file_content)
+        
+        # Use set() to remove duplicate email addresses, then sort them
+        unique_emails = sorted(list(set(found_emails)))
+        
+        if unique_emails:
+            # Save the isolated emails to the output file
+            with open(output_file, 'w') as out_file:
+                for email in unique_emails:
+                    out_file.write(email + '\n')
+            
+            print(f"✅ Success! Extracted {len(unique_emails)} unique email address(es).")
+            print(f"💾 Results have been saved to '{output_file}'.")
+        else:
+            print("ℹ️ No email addresses were found in the source file.")
+            
+    except FileNotFoundError:
+        print(f"❌ Error: The file '{input_file}' was not found.")
+        print("Please ensure the file exists in the same folder as this script.")
+
+def generate_sample_file(filename):
+    """Utility function to quickly create a mock text file for testing purposes."""
+    sample_text = """
+    Hey everyone,
+    For project updates, email contact@development-team.org or reach out to alex.smith123@company.com.
+    If you hit billing snags, please message billing@company.com. 
+    Note: reach out to contact@development-team.org if you need extra access privileges.
+    """
+    with open(filename, 'w') as file:
+        file.write(sample_text)
+    print(f"📝 Created a sample source file named '{filename}' for demonstration.")
+
+if __name__ == "__main__":
+    source_txt = "raw_text_data.txt"
+    destination_txt = "extracted_emails.txt"
+    
+    # Automate creation of a test file if you don't have one handy
+    generate_sample_file(source_txt)
+    
+    print(f"\nScanning '{source_txt}' for email entries...")
+    extract_emails_from_file(source_txt, destination_txt)
